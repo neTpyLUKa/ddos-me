@@ -1,0 +1,7 @@
+{
+  "Host": "127.0.0.1",
+  "HttpConnections": 100,
+  "Target": 10000,
+  "Timeout": 10,
+  "PayloadsPerConnection": 5
+}
