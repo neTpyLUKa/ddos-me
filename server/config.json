@@ -1,3 +1,4 @@
 {
-  "MaxHttpConnections": 100
+  "MaxHttpConnections": 100,
+  "PrivateKey": "1a944ffbd9a31e25053e2f29fa75ae8e70f7617f8eb908a48744fc8c79238b1a"
 }

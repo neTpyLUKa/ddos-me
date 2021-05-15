@@ -1,7 +1,9 @@
 {
   "Host": "127.0.0.1",
-  "HttpConnections": 100,
+  "HttpConnections": 10,
   "Target": 10000,
   "Timeout": 10,
-  "PayloadsPerConnection": 5
+  "PayloadsPerConnection": 10,
+  "PublicKey": "474f37561654bb60409e21b3A4Bb15d96E39D770",
+  "Address": "0xD0F2817538F23da2c3C3E587C0fA06eb4Ca9aC03"
 }

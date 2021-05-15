@@ -1,24 +1,16 @@
-package config
+package server_config
 
 import (
 	"encoding/json"
+	"github.com/caarlos0/env"
+	"log"
 	"os"
-	"time"
 )
 
 type Config struct {
-	Host string `json:"Host"`
 	MaxHttpConnections  int `json:"MaxHttpConnections"`
-	Target  int `json:"Target"`
-	Timeout  int `json:"Timeout"` // in seconds
-	PayloadsPerConnection  int `json:"PayloadsPerConnection"`
+	PrivateKey string `json:"PrivateKey"`
 }
-
-func (c *Config) GetTimeout() time.Duration {
-	return time.Duration(c.Timeout) * time.Second
-}
-
-// client is responsible for duplicate check :)
 
 // results file ?
 // retry count ?
@@ -34,6 +26,9 @@ func ParseConfig(configFile string) (*Config, error) {
 	config := Config{}
 	if err := jsonParser.Decode(&config); err != nil {
 		return nil, err
+	}
+	if err := env.Parse(&config); err != nil {
+		log.Fatalln("Error processing env variables", err.Error())
 	}
 	return &config, nil
 }

@@ -1,28 +1,45 @@
 package payload
 
 import (
+	"crypto/ecdsa"
+	"fmt"
+	"github.com/ethereum/go-ethereum/crypto"
+	"log"
 	"testing"
 )
 
-func TestEncode(t *testing.T) {
-	secret := Secret{}
-	payload := Payload{Counter: 0, Id: []int64{1}}
-	bytes, err := Encode(&payload, &secret)
+func TestEncodeDecode(t *testing.T) {
+	privateKey, err := crypto.HexToECDSA("1a944ffbd9a31e25053e2f29fa75ae8e70f7617f8eb908a48744fc8c79238b1a")
 	if err != nil {
-		t.Error("Error encoding payload:", err.Error())
+		log.Fatal(err)
 	}
-	if string(bytes) != "{\"Counter\":0,\"Id\":[1]}" {
-		t.Error("Bad encoding:", string(bytes))
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		log.Fatal("Error casting public key to ECDSA")
 	}
-}
 
-func TestDecode(t *testing.T) {
-	bytes := []byte("{\"Counter\":5, \"Id\":[0]}")
-	payload, err := Decode(bytes)
+	address := crypto.PubkeyToAddress(*publicKeyECDSA)
+	fmt.Println(address.Hex()) // this one !
+
+	payload, err := CreatePayload(address, privateKey)
 	if err != nil {
-		t.Error("Error decoding payload:", err.Error())
+		log.Fatal("Error creating payload: ", err.Error())
 	}
-	if payload == nil || payload.Counter != 5 || len(payload.Id) != 1 || payload.Id[0] != 0 {
-		t.Error("Unexpected value decoded")
+
+	signature, err := CreateSignature(payload, privateKey)
+	if err != nil {
+		log.Fatal("Error creating signature")
+	}
+
+	err = Verify(payload, signature, publicKeyECDSA)
+	if err != nil {
+		log.Fatal("Error matching signatures: ", err.Error())
+	}
+
+	signature[3] = 'a'
+	err = Verify(payload, signature, publicKeyECDSA)
+	if err == nil {
+		log.Fatal("Verify supposed to fail, got err == nil")
 	}
 }
